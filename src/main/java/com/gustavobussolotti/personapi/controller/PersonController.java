@@ -2,9 +2,9 @@ package com.gustavobussolotti.personapi.controller;
 
 import com.gustavobussolotti.personapi.dto.request.PersonDTO;
 import com.gustavobussolotti.personapi.dto.response.MessageResponseDTO;
-import com.gustavobussolotti.personapi.entity.Person;
 import com.gustavobussolotti.personapi.exception.PersonNotFoundException;
 import com.gustavobussolotti.personapi.service.PersonService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/people")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class PersonController {
 
     private final PersonService personService;
-
-    @Autowired
-    public PersonController(PersonService personService) {
-        this.personService = personService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //return 201
@@ -43,5 +39,10 @@ public class PersonController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) throws PersonNotFoundException {
         personService.deleteById(id);
+    }
+
+    @PutMapping("/{id}")
+    public MessageResponseDTO updateByID(@PathVariable Long id,@Valid @RequestBody PersonDTO personDTO) throws PersonNotFoundException{
+        return personService.updateById(id, personDTO );
     }
 }

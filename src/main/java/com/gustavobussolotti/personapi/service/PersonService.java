@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,10 +26,10 @@ public class PersonService {
     public MessageResponseDTO createPerson(PersonDTO personDTO){
         Person personToSave = personMapper.toModel(personDTO);
         Person savedPerson = personRepository.save(personToSave);
-        return MessageResponseDTO.builder()
-                .message("Create person with ID "+savedPerson.getId())
-                .build();
+        return createMessageResponse("Create person with ID "+savedPerson.getId());
     }
+
+
 
     public List<PersonDTO> listAll(){
         List<Person> allPeople = personRepository.findAll();
@@ -45,15 +44,33 @@ public class PersonService {
         //    throw new PersonNotFoundException(id);
         //}
         //return personMapper.toDTO(optionalPerson.get());
-       Person person = personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
-
+        Person person = verifyIfExists(id);
         return personMapper.toDTO(person);
     }
 
     public void deleteById(Long id) throws PersonNotFoundException {
+       verifyIfExists(id);
+        personRepository.deleteById(id);
+    }
+
+
+    public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException {
+        verifyIfExists(id);
+
+        Person personToUpdate = personMapper.toModel(personDTO);
+        Person savedPerson = personRepository.save(personToUpdate);
+        return createMessageResponse("Updated person with ID "+savedPerson.getId());
+    }
+
+    private Person verifyIfExists(Long id) throws PersonNotFoundException {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
-        personRepository.deleteById(id);
+        return person;
+    }
+
+    private MessageResponseDTO createMessageResponse(String message) {
+        return MessageResponseDTO.builder()
+                .message(message)
+                .build();
     }
 }
