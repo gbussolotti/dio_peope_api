@@ -16,10 +16,11 @@ public class PersonUtils {
 
     public static PersonDTO createFakeDTO() {
         return PersonDTO.builder()
+                .id(PERSON_ID)
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
                 .cpf(CPF_NUMBER)
-                .birthDate("04-04-2010")
+                .birthDate("01-12-1990")
                 .phones(Collections.singletonList(PhoneUtils.createFakeDTO()))
                 .build();
     }
